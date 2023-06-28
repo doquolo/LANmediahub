@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, redirect
 import os
 
 app = Flask(__name__)
@@ -27,15 +27,28 @@ def serveImage():
     args = request.args
     img_name = args.get("image", default="", type=str)
     folder_name = args.get("folder", default="", type=str)
+    action = args.get("action", default="", type=str)
+
     print(img_name)
     print(folder_name)
+
     if (img_name != "" and folder_name != ""):
-        try:
-            path = f"{folder_name}/{img_name}"
-            print(path)
-            return send_file(path)
-        except Exception as e:
-            return str(e)
+        # TODO: add delete
+        if (action == "delete"):
+            try:
+                os.remove(f"{folder_name}/{img_name}")
+                print(f"deleted: {folder_name}/{img_name}")
+                return True
+            except Exception as e:
+                return {"status": "failed", "error": str(e)}
+        
+        elif (action == ""):
+            try:
+                path = f"{folder_name}/{img_name}"
+                print(path)
+                return send_file(path)
+            except Exception as e:
+                return str(e)
         
 @app.route("/favicon", methods=['GET'])
 def favicon():
@@ -52,11 +65,13 @@ def upload():
             files = request.files.getlist("file[]")
             for file in files:
                 file.save(f"assets/{file.filename}")
-            return {'status': "success"}
+            return redirect("/", code=302)
         except Exception as e:
             return {'status': "failed", 'error': str(e)}
 
 # TODO: add albums / adaptive zoom
+# TODO: complete title bar feature
+# TODO: write a GUI script which allow the server to run with windows and be able to change database location
 
 
 app.run(host="0.0.0.0")
