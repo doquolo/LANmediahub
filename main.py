@@ -42,6 +42,21 @@ def favicon():
     return send_file("favicon/favicon.png", mimetype='image/png')
         
 # TODO: add a upload gate
+@app.route("/upload", methods=['GET', 'POST'])
+def upload():
+    if (request.method == "GET"):
+        print("get")
+        return render_template("upload.html")
+    elif (request.method == "POST"):
+        try:
+            files = request.files.getlist("file[]")
+            for file in files:
+                file.save(f"assets/{file.filename}")
+            return {'status': "success"}
+        except Exception as e:
+            return {'status': "failed", 'error': str(e)}
+
 # TODO: add albums / adaptive zoom
+
 
 app.run(host="0.0.0.0")

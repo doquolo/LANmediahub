@@ -6,20 +6,13 @@
     <title>uwu</title>
     <link rel="shortcut icon" href="/favicon" type="image/x-icon">
     <style>
-        .imageContainer > a, .imageContainer > a > img, .imageContainer > a > video {
+        .imageContainer > img, .imageContainer > video {
             width: 300px;
             height: 300px;
             margin: 1rem 1rem;
             border: 1px solid white;
             border-radius: 15%;
             object-fit: cover;
-        }
-        .imageContainer > a {
-            border: none;
-        }
-
-        .imageContainer > a > img, .imageContainer > a > video {
-            margin: 0px 0px;
         }
 
         .imageContainer {
@@ -43,10 +36,150 @@
         -ms-overflow-style: none;  /* IE and Edge */
         scrollbar-width: none;  /* Firefox */
         }
-    </style>
+
+        <style>
+        #myImg {
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+        }
+
+        #myImg:hover {opacity: 0.7;}
+
+        /* The Modal (background) */
+        .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+        }
+
+        /* Modal Content (image) */
+        .modal-content {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        }
+
+        /* Caption of Modal Image */
+        #caption {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        color: #ccc;
+        padding: 10px 0;
+        height: 150px;
+        }
+
+        /* Add Animation */
+        .modal-content, #caption {  
+        animation-name: zoom;
+        animation-duration: 0.6s;
+        }
+
+        @keyframes zoom {
+        from {transform: scale(0.1)} 
+        to {transform: scale(1)}
+        }
+
+        /* The Close Button */
+        .close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        }
+
+        .delete {
+        top: 22px;
+        right: 70px;
+        font-size: 25px;
+        }
+
+        .close:hover,
+        .close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+        }
+
+        /* 100% Image Width on Smaller Screens */
+        @media only screen and (max-width: 700px){
+            .modal-content {
+                width: 100%;
+            }
+        }
+</style>
 </head>
 <body>
-    <div class="imageContainer hiddensb"></div>
+    <div class="imageContainer hiddensb">
+    </div>
+    
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <span class="close">&times;</span>
+        <span class="close delete">Delete?</span>
+        <img class="modal-content" id="img01">
+        <video id="vid01" class="modal-content" controls>
+            <source src="" type="video/mp4">
+        </video>
+        <a id="caption" href="" target="_blank">Open in new tab</a>
+    </div>
+
+    <script>
+        const expandImage = (e) => {
+            // Get the modal
+            var modal = document.getElementById('myModal');
+            var captionText = document.getElementById("caption");
+            modal.style.display = "block";
+            var modalImg = document.getElementById("img01");
+            var modalVid = document.getElementById("vid01");
+            
+            if (e.id == "img") {
+                // Get the image and insert it inside the modal - use its "alt" text as a caption
+                modalVid.style.display = "none";
+                modalImg.style.display = "block";
+                modalImg.src = e.src;
+                captionText.href = e.src;
+            } else if (e.id == "vid") {
+                modalImg.style.display = "none";
+                modalVid.style.display = "block";
+                modalImg.src = "";
+                modalVid.src = e.getElementsByTagName("source")[0].src;
+                captionText.href = e.getElementsByTagName("source")[0].src;
+            }
+        }
+
+        const deleteMedia = (e) => {
+            // TODO: create a function that takes an media object as its input, make a request to delete that file on the server
+            return 0
+        }
+        
+        // Get the modal
+        var modal = document.getElementById('myModal');
+        
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+        
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() { 
+          modal.style.display = "none";
+        }
+    </script>
+
     <script>
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -63,18 +196,14 @@
             for (let i in list) {
                 if (list[i][1] == "image") {
                     let elem = `
-                    <a href="/image?image=${list[i][0]}&folder=assets" target=”_blank”>
-                        <img src="/image?image=${list[i][0]}&folder=assets" alt="this is prob an image" loading="lazy"></img>
-                    </a><br/>
+                    <img id="img" onclick="expandImage(this)" src="/image?image=${list[i][0]}&folder=assets" alt="this is prob an image" loading="lazy"></img><br/>
                     `
                     container.innerHTML += elem
                 } else if (list[i][1] == "video") {
                     let elem = `
-                    <a href="/image?image=${list[i][0]}&folder=assets" target=”_blank”>
-                        <video width="300" height="300" preload="none" controls muted>
-                            <source src="/image?image=${list[i][0]}&folder=assets" type="video/mp4">
-                        </video>
-                    </a><br/>
+                    <video id="vid" width="300" height="300" preload="none" onclick="expandImage(this)" paused muted>
+                        <source src="/image?image=${list[i][0]}&folder=assets" type="video/mp4">
+                    </video><br/>
                     `
                     container.innerHTML += elem
                 }
