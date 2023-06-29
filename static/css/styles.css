@@ -182,7 +182,7 @@ body {
   margin-left: 1rem;
 }
 
-.upload > svg {
+.menu-button > svg {
   fill: white;
   height: 2rem;
   width: 2rem;
@@ -203,4 +203,56 @@ body {
 
 .function > span {
   margin: 0rem 0.5rem 0rem 0.5rem;
+}
+
+.menu {
+  /*  hidden by default, shows by pressing bars button  */
+  /*   display: flex; */
+  display: none;
+  position: fixed;
+  top: 12%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation-name: fade;
+  animation-duration: 0.3s;
+  height: auto;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.choice {
+  color: white;
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 10vw;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.minichoice {
+  margin-right: 1rem;
+}
+.minichoice:last-child {
+  margin-right: 0rem;
+}
+
+.choice> p > svg, .minichoice> p > svg {
+  margin-right: 0.25rem;
+  fill: white;
+}
+
+.choice > p, .minichoice > p {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
 }

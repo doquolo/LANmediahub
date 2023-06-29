@@ -18,7 +18,7 @@ function createImgFrame(list) {
             container.innerHTML += elem
         } else if (list[i][1] == "video") {
             let elem = `
-            <video id="vid" width="300" height="300" preload="none" onclick="expandImage(this)" src="/image?image=${list[i][0]}&folder=assets" paused muted></video><br/>
+            <video id="vid" width="300" height="300" preload="none" onclick="expandImage(this)" src="/image?image=${list[i][0]}&folder=assets" paused muted poster="/icon/play.png"></video><br/>
             `
             container.innerHTML += elem
         }
