@@ -2,7 +2,7 @@ const expandImage = (e) => {
     // Get the modal
     var modal = document.getElementById('myModal');
     var captionText = document.getElementById("caption");
-    modal.style.display = "block";
+    modal.style.display = "flex";
     var modalImg = document.getElementById("img01");
     var modalVid = document.getElementById("vid01");
     
@@ -21,11 +21,6 @@ const expandImage = (e) => {
     }
 }
 
-const deleteMedia = (e) => {
-    // TODO: create a function that takes an media object as its input, make a request to delete that file on the server
-    return 0
-}
-
 // Get the modal
 var modal = document.getElementById('myModal');
 
@@ -39,26 +34,26 @@ close.onclick = function() {
 
 // When the user clicks on <span> (del), delete the image
 const del = (e) => { 
-    let vid01src = document.querySelector("#vid01").src;
-    let img01src = document.querySelector("#img01").src;
-    console.log(vid01src)
-    console.log(img01src)
-    var filelink = "";
-    if (vid01src == "") {
-        // delete image
-        filelink = img01src;
-    } else {
-        // delete video
-        filelink = vid01src;
-
-    }
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-            location.reload()
+    if (confirm("Are you sure to delete this media? \nThis action is irreversible!")) {
+        let vid01src = document.querySelector("#vid01").src;
+        let img01src = document.querySelector("#img01").src;
+        console.log(vid01src)
+        console.log(img01src)
+        var filelink = "";
+        if (vid01src == "") {
+            // delete image
+            filelink = img01src;
+        } else {
+            // delete video
+            filelink = vid01src;
         }
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                location.reload()
+            }
+        }
+        xhr.open('GET', `${filelink}&action=delete`, true);
+        xhr.send(null);
     }
-    xhr.open('GET', `${filelink}&action=delete`, true);
-    xhr.send(null);
-
 }
