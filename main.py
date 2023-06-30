@@ -14,7 +14,7 @@ def homepage():
 
 @app.route("/queryAllFiles", methods=["GET"])
 def queryAll():
-    with open("assets/index.json", "r") as file:
+    with open("data/index.json", "r") as file:
         return jsonify(json.loads(file.read()))
 
 
@@ -31,12 +31,12 @@ def serveImage():
             try:
                 os.remove(f"{folder_name}/{img_name}")
                 # remove the file in the index
-                index = json.loads(open('assets/index.json', 'r').read())
+                index = json.loads(open('data/index.json', 'r').read())
                 for i in range(len(index)):
                     if (index[i][0] == img_name):
                         del index[i]
                         break
-                open('assets/index.json', 'w').write(json.dumps(index))
+                open('data/index.json', 'w').write(json.dumps(index))
                 return True
             except Exception as e:
                 return {"status": "failed", "error": str(e)}
@@ -78,9 +78,9 @@ def upload():
                 # save file at the defined path
                 file.save(os.path.join(path, file.filename))
                 # add the file to the index
-                index = json.loads(open('assets/index.json', 'r').read())
+                index = json.loads(open('data/index.json', 'r').read())
                 index.append([file.filename, path, filetype])
-                open('assets/index.json', 'w').write(json.dumps(index))
+                open('data/index.json', 'w').write(json.dumps(index))
 
             return redirect("/", code=302)
         except Exception as e:
@@ -101,18 +101,6 @@ def hostInfo():
     except Exception as e:
         return {"status": "failed", "error": str(e)}
 
-# shamelessly copied from https://stackoverflow.com/questions/15562446/how-to-stop-flask-application-without-using-ctrl-c
-from flask import request
-def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
-    
-@app.get('/shutdown')
-def shutdown():
-    shutdown_server()
-    return 'Server shutting down...'
 
 # TODO: add albums
 # TODO: finish upload page

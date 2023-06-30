@@ -4,8 +4,6 @@ import os
 import json
 from main import app
 import threading
-import sys
-from io import StringIO
 
 
 def setup():
@@ -45,11 +43,11 @@ def setup():
                 win.close()
                 break
     
-    with open("assets/index.json", "w") as file:
+    with open("data/index.json", "w") as file:
         file.write(json.dumps(res))
 
 def startServer():
-    server_up = False
+
     # Define the layout of your window
     layout = [
         [sg.Text("Path to database folder: assets/", enable_events=True, key="-folder-")],
@@ -59,7 +57,7 @@ def startServer():
     ]
 
     # Create the window
-    window = sg.Window('Terminal Output', layout)
+    window = sg.Window('LANmediahub - Server', layout, finalize=True, enable_close_attempted_event=False)
 
     # Event loop to process events and display output
     while True:
@@ -90,7 +88,7 @@ def checkInit():
             os.mkdir("assets/")
         else:
             raise SystemExit(0)
-    if (not os.path.isfile("assets/index.json")):
+    if (not os.path.isfile("data/index.json")):
         content = "It seems that this is the first time you start up LANmediahub\nBegin setup process?"
         choice = sg.popup_ok_cancel(content, title="Setup - Alert")
         if (choice == "OK"):

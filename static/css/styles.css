@@ -1,6 +1,7 @@
 /* begin of css varibales */
 :root {
   --size: 45vw;
+  --bg-img: url();
 }
 
 /* begin of prevent horizontal scrolling */
@@ -150,7 +151,7 @@ body {
 /* begin of header */
 .heading {
   position: fixed;
-  background-color: #0c0f12;
+  background-color: rgb(12 15 18 / 70%);
   width: 100%;
   height: 12%;
   top: 0%;
@@ -255,4 +256,17 @@ body {
     display: flex;
     flex-direction: row;
     align-items: stretch;
+}
+
+/* begin of background */
+.background {
+  background: var(--bg-img);
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  background-size: cover;
+  filter: blur(5px);
 }
