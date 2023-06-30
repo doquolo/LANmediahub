@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, send_file, redirect
+from flask import Flask, render_template, request, send_file, redirect, jsonify
 import os
 import platform, socket, psutil
 import datetime
+import json
 
 init_time = datetime.datetime.now()
 
@@ -13,18 +14,8 @@ def homepage():
 
 @app.route("/queryAllFiles", methods=["GET"])
 def queryAll():
-    folder_name = request.args.get("folderName", default="assets", type=str)
-    dir = os.listdir(folder_name)
-    res = []
-    for i in dir:
-        # image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp']
-        video_extensions = [".mp4", ".avi", ".mkv", ".mov", ".wmv"]
-        extension = i[-4:]
-        if extension in video_extensions:
-            res.append((i, "video"))
-        else:
-            res.append((i, "image"))
-    return {"dir": res}
+    with open("assets/index.json", "r") as file:
+        return jsonify(json.loads(file.read()))
 
 
 @app.route("/image", methods=["GET"])
@@ -34,15 +25,18 @@ def serveImage():
     folder_name = args.get("folder", default="", type=str)
     action = args.get("action", default="", type=str)
 
-    print(img_name)
-    print(folder_name)
-
     if img_name != "" and folder_name != "":
         # TODO: add delete
         if action == "delete":
             try:
                 os.remove(f"{folder_name}/{img_name}")
-                print(f"deleted: {folder_name}/{img_name}")
+                # remove the file in the index
+                index = json.loads(open('assets/index.json', 'r').read())
+                for i in range(len(index)):
+                    if (index[i][0] == img_name):
+                        del index[i]
+                        break
+                open('assets/index.json', 'w').write(json.dumps(index))
                 return True
             except Exception as e:
                 return {"status": "failed", "error": str(e)}
@@ -50,7 +44,6 @@ def serveImage():
         elif action == "":
             try:
                 path = f"{folder_name}/{img_name}"
-                print(path)
                 return send_file(path)
             except Exception as e:
                 return str(e)
@@ -71,7 +64,24 @@ def upload():
         try:
             files = request.files.getlist("file[]")
             for file in files:
-                file.save(f"assets/{file.filename}")
+                # get path
+                path = "assets"
+                # get filetype
+                video_extensions = ["mp4", "avi", "mkv", "mov", "wmv"]
+                extension = file.filename.split(".")[1]
+                print(extension)
+                if extension != "json":
+                    if extension in video_extensions:
+                        filetype = "video"
+                    else:
+                        filetype = "image"
+                # save file at the defined path
+                file.save(os.path.join(path, file.filename))
+                # add the file to the index
+                index = json.loads(open('assets/index.json', 'r').read())
+                index.append([file.filename, path, filetype])
+                open('assets/index.json', 'w').write(json.dumps(index))
+
             return redirect("/", code=302)
         except Exception as e:
             return {"status": "failed", "error": str(e)}
@@ -91,9 +101,18 @@ def hostInfo():
     except Exception as e:
         return {"status": "failed", "error": str(e)}
 
+# shamelessly copied from https://stackoverflow.com/questions/15562446/how-to-stop-flask-application-without-using-ctrl-c
+from flask import request
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+    
+@app.get('/shutdown')
+def shutdown():
+    shutdown_server()
+    return 'Server shutting down...'
 
 # TODO: add albums
-# TODO: write a GUI script which allow the server to run with windows and be able to change database location
 # TODO: finish upload page
-
-app.run(host="0.0.0.0", debug=True)
