@@ -8,8 +8,9 @@ init_time = datetime.datetime.now()
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def homepage():
+    folder_name = request.args.get("folder", default="", type=str)
     return render_template("index.html")
 
 @app.route("/queryAllFiles", methods=["GET"])
@@ -30,6 +31,8 @@ def queryAll():
                 for i in index:
                     if (i[1] == full_path): res.append(i)
                 return jsonify(res)
+        else: 
+            return jsonify([])
 
 
 
