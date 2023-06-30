@@ -14,8 +14,23 @@ def homepage():
 
 @app.route("/queryAllFiles", methods=["GET"])
 def queryAll():
-    with open("data/index.json", "r") as file:
-        return jsonify(json.loads(file.read()))
+    folder_name = request.args.get("folder", default="", type=str)
+    print(folder_name)
+    path = "assets"
+    if (folder_name == ""):
+        with open("data/index.json", "r") as file:
+            return jsonify(json.loads(file.read()))
+    else: 
+        full_path = os.path.join(path, folder_name)
+        if (os.path.isdir(full_path)):
+            with open("data/index.json", "r") as file:
+                # filter out objects with the corresponding folder path
+                index = json.loads(file.read())
+                res = []
+                for i in index:
+                    if (i[1] == full_path): res.append(i)
+                return jsonify(res)
+
 
 
 @app.route("/image", methods=["GET"])
