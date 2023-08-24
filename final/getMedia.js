@@ -23,7 +23,21 @@ function getMedia() {
   function createImgFrame(list) {
     let container = document.querySelector(".imageContainer");
     container.innerHTML = "";
+    // adapt the code from LANmediahub to work with this project
+    let video_extensions = ["mp4", "avi", "mkv", "mov", "wmv"]
+    list = list.files
+    let processed_list = [];
     for (let i in list) {
+      let filetype = "";
+      if (video_extensions.includes(list[i].substr(list[i].length - 4, 4))) {
+        filetype = "video"
+      }
+      else {
+        filetype = "image"
+      }
+      processed_list.push([list[i], "assets", filetype]);
+    }
+    for (let i in processed_list) {
       if (list[i][2] == "image") {
         let elem = `
             <img id="img" onclick="expandImage(this)" src="/image?image=${list[i][0]}&folder=${list[i][1]}" alt="this is prob an image" loading="lazy"></img><br/>
